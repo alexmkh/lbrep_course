@@ -34,10 +34,10 @@ import {
 } from "@mui/material";
 
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
-import RoomIcon from "@mui/icons-material/Room";
-
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
+import RoomIcon from "@mui/icons-material/Room";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
 
 import moment from "moment";
 
@@ -183,17 +183,20 @@ const ListingDetail = () => {
 
       {/* More information about the listing */}
 
-      <Grid item container>
-        <Grid item container xs={7} direction="column">
+      <Grid item container className={styles.listingInfoContainer}>
+        <Grid item container xs={7} direction="column" spacing={1}>
           <Grid item>
             <Typography variant="h5"> {state.listingInfo.title} </Typography>
           </Grid>
           <Grid item>
             <RoomIcon fontSize="small" />{" "}
-            <Typography variant="h6"> {state.listingInfo.borough} borough </Typography>
+            <Typography variant="h6">
+              {" "}
+              {state.listingInfo.borough} borough{" "}
+            </Typography>
           </Grid>
           <Grid item>
-            <Typography>
+            <Typography variant="subtitle1" color="textSecondary">
               Posted on{" "}
               {moment(state.listingInfo.date_posted).format(
                 "MMMM Do YYYY, h:mm a"
@@ -201,13 +204,92 @@ const ListingDetail = () => {
             </Typography>
           </Grid>
         </Grid>
-        <Grid item container xs={5} alignItems='center'>
-          <Typography>
+        <Grid item container xs={5} alignItems="center">
+          <Typography variant="h6" className={styles.priceText}>
             {" "}
-            {state.listingInfo.listing_type} | {state.listingInfo.price}{" "}
+            {state.listingInfo.listing_type} |{" "}
+            {state.listingInfo.property_status === "Sale"
+              ? `$${state.listingInfo.price
+                  .toString()
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
+              : `$${state.listingInfo.price
+                  .toString()
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}/${
+                  state.listingInfo.rental_frequency
+                }`}
           </Typography>
         </Grid>
       </Grid>
+
+      <Grid
+        item
+        container
+        justifyContent="flex-start"
+        className={styles.listingInfoContainer}
+      >
+        {state.listingInfo.rooms ? (
+          <Grid item xs={2} className={styles.optionTag}>
+            <Typography variant="h6">
+              {state.listingInfo.rooms} Rooms
+            </Typography>
+          </Grid>
+        ) : (
+          ""
+        )}
+
+        {state.listingInfo.furnished ? (
+          <Grid item xs={2} className={styles.optionTag}>
+            <CheckBoxIcon className={styles.checkBoxIcon} />{" "}
+            <Typography variant="h6">Furnished</Typography>
+          </Grid>
+        ) : (
+          ""
+        )}
+
+        {state.listingInfo.pool ? (
+          <Grid item xs={2} className={styles.optionTag}>
+            <CheckBoxIcon className={styles.checkBoxIcon} />{" "}
+            <Typography variant="h6">Pool</Typography>
+          </Grid>
+        ) : (
+          ""
+        )}
+
+        {state.listingInfo.elevator ? (
+          <Grid item xs={2} className={styles.optionTag}>
+            <CheckBoxIcon className={styles.checkBoxIcon} />{" "}
+            <Typography variant="h6">Elevator</Typography>
+          </Grid>
+        ) : (
+          ""
+        )}
+
+        {state.listingInfo.cctv ? (
+          <Grid item xs={2} className={styles.optionTag}>
+            <CheckBoxIcon className={styles.checkBoxIcon} />{" "}
+            <Typography variant="h6">Cctv</Typography>
+          </Grid>
+        ) : (
+          ""
+        )}
+
+        {state.listingInfo.parking ? (
+          <Grid item xs={2} className={styles.optionTag}>
+            <CheckBoxIcon className={styles.checkBoxIcon} />{" "}
+            <Typography variant="h6">Parking</Typography>
+          </Grid>
+        ) : (
+          ""
+        )}
+      </Grid>
+
+      {/* Description */}
+      {state.listingInfo.description && (
+        <Grid item className={styles.listingInfoContainer}>
+          <Typography variant="h5">Description</Typography>
+          <Typography variant="h6">{state.listingInfo.description}</Typography>
+        </Grid>
+      )}
     </div>
   );
 };

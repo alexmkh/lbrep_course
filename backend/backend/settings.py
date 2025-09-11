@@ -143,10 +143,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.User'  # Custom user model
 
-# CORS_ALLOW_ALL_ORIGINS = True  # Allow all origins for CORS
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # React
-]
+CORS_ALLOW_ALL_ORIGINS = True  # Allow all origins for CORS
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",  # React
+# ]
 
 
 REST_FRAMEWORK = {
