@@ -1,0 +1,45 @@
+.sliderContainer {
+  position: relative;
+  margin-top: 1rem;
+}
+
+
+            /* style={{
+              position: "absolute",
+              cursor: "pointer",
+              fontSize: "3rem",
+              color: "white",
+              top: "50%",
+              left: "27.5%",
+              // "&:hover": {
+              // 	backgroundColor: "green",
+              // },
+            }} */
+
+.sliderArrowLeft {
+  position: absolute;
+  cursor: pointer;
+  font-size: 3rem;
+  color: white;
+  top: 50%;
+  left: 27.5%;
+}
+
+.sliderArrowRight {
+  position: absolute;
+  cursor: pointer;
+  font-size: 3rem;
+  color: white;
+  top: 50%;
+  right: 27.5%;
+}
+
+.sliderArrowLeft:hover, .sliderArrowRight:hover {
+  color: lightgray;
+  background-color: green;
+}
+
+.picture {
+  width: 45rem;
+  height: 35rem;
+}

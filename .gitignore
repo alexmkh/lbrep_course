@@ -1,0 +1,65 @@
+# --- Общие ---
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.sqlite3
+*.db
+.env
+*.swp
+.DS_Store
+Thumbs.db
+
+# --- Python / Django ---
+myvenv/
+.env/
+*.egg-info/
+*.egg
+.eggs/
+dist/
+build/
+staticfiles/
+media/
+
+# --- Django настройки ---
+# локальные файлы окружения
+*.local
+*.secret
+settings_local.py
+
+# --- Node / React ---
+frontend/node_modules/
+frontend/.pnp/
+frontend/.pnp.js
+frontend/.parcel-cache
+frontend/dist/
+frontend/build/
+frontend/.next/
+frontend/out/
+
+# --- VS Code ---
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# --- OS ---
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# --- Coverage / тесты ---
+.coverage
+coverage/
+htmlcov/
+*.cover
+*.py,cover
+.cache/
+pytest_cache/
+nosetests.xml
+coverage.xml
+test-results.xml
+junit-*.xml

@@ -1,0 +1,207 @@
+import React, { useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { useImmerReducer } from "use-immer";
+import Axios from "axios";
+
+// MUI imports
+import {
+  Grid,
+  AppBar,
+  Typography,
+  Button,
+  Card,
+  CardHeader,
+  CardMedia,
+  CardContent,
+  CircularProgress,
+  TextField,
+} from "@mui/material";
+
+// Custom imports
+import styles from "./CSS_Modules/Login.module.css";
+
+
+
+// Contexts
+import DispatchContext from "../Contexts/DispatchContext";
+import StateContext from "../Contexts/StateContext";
+
+const initialState = {
+  usernameValue: "",
+  passwordValue: "",
+  sendRequest: 0,
+  token: "",
+};
+
+
+function Login() {
+  const navigate = useNavigate();
+  const URL = "http://localhost:8000/api-auth-djoser/";
+
+  const GlobalDispatch = useContext(DispatchContext);
+  const GlobalState = useContext(StateContext);
+
+  const ReducerFunction = (draft, action) => {
+    switch (action.type) {
+      case "catchUsernameChange":
+        draft.usernameValue = action.usernameChosen;
+        break;
+      case "catchPasswordChange":
+        draft.passwordValue = action.passwordChosen;
+        break;
+      case "changeSendRequest":
+        draft.sendRequest += 1;
+        break;
+      case "catchToken":
+        draft.token = action.tokenValue;
+        break;
+      default:
+        return draft; // Return the current state if no action matches
+    }
+  };
+
+  const [state, dispatch] = useImmerReducer(ReducerFunction, initialState);
+
+  const FormSubmit = (e) => {
+    e.preventDefault();
+    // data.username = state.usernameValue;
+    // data.password = state.passwordValue;
+    // setSendRequest((prev) => !prev);
+    dispatch({ type: "changeSendRequest" });
+  };
+
+  useEffect(() => {
+    if (state.sendRequest) {
+      const source = Axios.CancelToken.source();
+      const SignIn = async () => {
+        try {
+          const response = await Axios.post(
+            URL + "token/login/",
+            { username: state.usernameValue, password: state.passwordValue },
+            {
+              cancelToken: source.token,
+            }
+          );
+          console.log("Token:", response.data.auth_token);
+          dispatch({
+            type: "catchToken",
+            tokenValue: response.data.auth_token,
+          });
+          GlobalDispatch({
+            type: "catchToken",
+            tokenValue: response.data.auth_token,
+          });
+          // navigate("/");
+        } catch (error) {
+          console.log("Error login:", error.response.data.non_field_errors[0]);
+        }
+      };
+      SignIn();
+      return () => {
+        source.cancel();
+      };
+    }
+  }, [state.sendRequest]);
+
+  useEffect(() => {
+    // let response
+    if (state.token !== "") {
+      const source = Axios.CancelToken.source();
+      const GetUserInfo = async () => {
+        try {
+          const response = await Axios.get(
+            URL + "users/me/",
+            { headers: { Authorization: "Token ".concat(state.token) } },
+            {
+              cancelToken: source.token,
+            }
+          );
+          GlobalDispatch({
+            type: "userSignsIn",
+            usernameInfo: response.data.username,
+            emailInfo: response.data.email,
+            userIdInfo: response.data.id,
+          });
+          navigate("/");
+        } catch (error) {
+          console.log("Error login:", error.response.data.non_field_errors[0]);
+        }
+      };
+      GetUserInfo();
+      return () => {
+        source.cancel("Component unmounted, request cancelled");
+      };
+    }
+  }, [state.token]);
+
+  return (
+    <div className={styles.formContainer}>
+      <form onSubmit={FormSubmit}>
+        <Grid item container justifyContent="center">
+          <Typography variant="h4">SIGN IN</Typography>
+        </Grid>
+        <Grid item container className={styles.formItem}>
+          <TextField
+            id="username"
+            label="Username"
+            variant="outlined"
+            fullWidth
+            onChange={(e) =>
+              dispatch({
+                type: "catchUsernameChange",
+                usernameChosen: e.target.value,
+              })
+            }
+            value={state.usernameValue}
+          />
+        </Grid>
+
+        <Grid item container className={styles.formItem}>
+          <TextField
+            id="password"
+            label="Password"
+            variant="outlined"
+            fullWidth
+            type="password"
+            onChange={(e) =>
+              dispatch({
+                type: "catchPasswordChange",
+                passwordChosen: e.target.value,
+              })
+            }
+            value={state.passwordValue}
+          />
+        </Grid>
+        <Grid item container className={styles.loginDiv} xs={8}>
+          <Button
+            className={styles.loginBtn}
+            variant="contained"
+            color="primary"
+            type="submit"
+            fullWidth
+          >
+            SIGN IN
+          </Button>
+        </Grid>
+      </form>
+      <Grid
+        item
+        container
+        justifyContent="center"
+        className={styles.registerPrompt}
+      >
+        <Typography variant="small">
+          Don't have an account yet?{" "}
+          <span
+            className={styles.signupLink}
+            onClick={() => navigate("/register")}
+          >
+            SIGN UP
+          </span>
+        </Typography>
+      </Grid>
+    </div>
+  );
+}
+
+export default Login;
