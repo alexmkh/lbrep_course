@@ -51,12 +51,17 @@ const ListingDetail = () => {
   const initialState = {
     dataIsLoading: true,
     listingInfo: "",
+    sellerProfileInfo: "",
   };
 
   const ReducerFunction = (draft, action) => {
     switch (action.type) {
       case "catchListingInfo":
         draft.listingInfo = action.listingObject;
+        break;
+
+      case "catchSellerProfileInfo":
+        draft.sellerProfileInfo = action.profileObject;
         break;
 
       case "loadingDone":
@@ -70,7 +75,7 @@ const ListingDetail = () => {
 
   const [state, dispatch] = useImmerReducer(ReducerFunction, initialState);
 
-  // Request to get profile info
+  // Request to get listing info
   useEffect(() => {
     const GetListingInfo = async () => {
       try {
@@ -81,7 +86,7 @@ const ListingDetail = () => {
           type: "catchListingInfo",
           listingObject: response.data,
         });
-        dispatch({ type: "loadingDone" });
+        // dispatch({ type: "loadingDone" });
       } catch (e) {
         console.log("There was a problem or the request was cancelled.");
         console.log(e.response);
@@ -89,6 +94,31 @@ const ListingDetail = () => {
     };
     GetListingInfo();
   }, []);
+
+  // Request to get profile info
+  useEffect(() => {
+    if (!state.listingInfo) {
+      return;
+    }
+
+    const GetProfileInfo = async () => {
+      try {
+        const response = await Axios.get(
+          `http://localhost:8000/api/profiles/${state.listingInfo.seller}/`
+        );
+        dispatch({
+          type: "catchSellerProfileInfo",
+          profileObject: response.data,
+        });
+        dispatch({ type: "loadingDone" });
+        console.log("Seller:", state.sellerProfileInfo);
+      } catch (e) {
+        console.log("There was a problem or the request was cancelled.");
+        console.log(e);
+      }
+    };
+    GetProfileInfo();
+  }, [state.listingInfo]);
 
   const listingPictures = [
     state.listingInfo.picture1,
@@ -290,6 +320,53 @@ const ListingDetail = () => {
           <Typography variant="h6">{state.listingInfo.description}</Typography>
         </Grid>
       )}
+
+      {/* Seller info */}
+      <Grid container className={styles.welcomeBackContainer}>
+        <Grid item xs={6} className={styles.profileImageDiv}>
+          <img
+            src={
+              state.sellerProfileInfo.profile_picture
+                ? state.sellerProfileInfo.profile_picture
+                : // : "https://via.placeholder.com/150"
+                  defaultBusinessMan
+            }
+            alt="Profile"
+            className={styles.profileImage}
+            onClick={() => navigate(`/agencies/${state.sellerProfileInfo.seller}`)}
+            // style={{ cursor: "pointer" }}
+          />
+        </Grid>
+        <Grid item container direction="column" justifyContent="center" xs={6}>
+          <Grid item>
+            <Typography
+              variant="h5"
+              align="center"
+              textAlign="center"
+              className={styles.formItem}
+            >
+              <span className={styles.userName}>
+                {state.sellerProfileInfo.agency_name}
+              </span>
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Typography
+              variant="h5"
+              align="center"
+              textAlign="center"
+              className={styles.formItem}
+            >
+              <IconButton>
+                <LocalPhoneIcon /> {state.sellerProfileInfo.phone_number}
+              </IconButton>
+            </Typography>
+          </Grid>
+        </Grid>
+        <Grid item className={styles.bioSection}>
+          {state.sellerProfileInfo.bio && state.sellerProfileInfo.bio}
+        </Grid>
+      </Grid>
     </div>
   );
 };
