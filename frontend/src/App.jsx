@@ -18,6 +18,7 @@ import Profile from "./Components/Profile";
 import Agencies from "./Components/Agencies";
 import AgencyDetail from "./Components/AgencyDetail";
 import ListingDetail from "./Components/ListingDetail";
+import LandmarkPhoto from "./Components/LandmarkPhoto";
 
 // Contexts for the app
 import { useImmerReducer } from "use-immer";
@@ -86,6 +87,7 @@ function App() {
               <Route path="/agencies/:id" element={<AgencyDetail />} />
               <Route path="/addproperty" element={<AddProperty />} />
               <Route path="/listings/:id" element={<ListingDetail />} />
+              <Route path="/poiphoto" element={<LandmarkPhoto />} />
               <Route path="/testing" element={<Testing />} />
               {/* Add more routes as needed */}
             </Routes>

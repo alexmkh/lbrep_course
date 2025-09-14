@@ -86,7 +86,7 @@ class Poi(models.Model):
         ("Stadium", "Stadium"),
     )
     type = models.CharField(max_length=50, choices=choices_type)
-    location = models.PointField(null=True, blank=True, srid=4236)
+    location = models.PointField(null=True, blank=True, srid=4326)
 
     def __str__(self):
         return self.name
