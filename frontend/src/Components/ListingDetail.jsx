@@ -177,6 +177,28 @@ const ListingDetail = () => {
     }
   }
 
+  async function DeleteHandler() {
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this listing?"
+    );
+    if (confirmDelete) {
+      try {
+        const response = await Axios.delete(
+          `http://localhost:8000/api/listings/${id}/delete/`,
+          {
+            headers: { Authorization: `Bearer ${GlobalState.userToken}` },
+          }
+        );
+        console.log("Listing deleted");
+        navigate("/listings");
+      } catch (e) {
+        console.log("There was a problem or the request was cancelled.");
+        console.log(e.response.data);
+      }
+    }
+  }
+
   if (state.dataIsLoading) {
     return (
       <Grid
@@ -399,6 +421,18 @@ const ListingDetail = () => {
         <Grid item className={styles.bioSection}>
           {state.sellerProfileInfo.bio && state.sellerProfileInfo.bio}
         </Grid>
+        {GlobalState.userId == state.listingInfo.seller ? (
+          <Grid item container justifyContent="space-around">
+            <Button variant="contained" color="primary">
+              Update
+            </Button>
+            <Button variant="contained" color="error" onClick={DeleteHandler}>
+              Delete
+            </Button>
+          </Grid>
+        ) : (
+          ""
+        )}
       </Grid>
 
       {/* Map */}
@@ -416,16 +450,21 @@ const ListingDetail = () => {
                 Points of Interest
               </Typography>
               {state.listingInfo.listing_pois_within_10km.map((poi) => {
-
                 function DegreeToRadians(degrees) {
                   return (degrees * Math.PI) / 180;
                 }
                 // Calculate distance from listing to poi by the formula
                 function CalculateDistance() {
                   const latitude1 = DegreeToRadians(state.listingInfo.latitude);
-                  const longitude1 = DegreeToRadians(state.listingInfo.longitude);
-                  const latitude2 = DegreeToRadians(poi.location.coordinates[0]);
-                  const longitude2 = DegreeToRadians(poi.location.coordinates[1]);
+                  const longitude1 = DegreeToRadians(
+                    state.listingInfo.longitude
+                  );
+                  const latitude2 = DegreeToRadians(
+                    poi.location.coordinates[0]
+                  );
+                  const longitude2 = DegreeToRadians(
+                    poi.location.coordinates[1]
+                  );
                   // The formula
                   const latDiff = latitude2 - latitude1;
                   const lonDiff = longitude2 - longitude1;
@@ -454,7 +493,10 @@ const ListingDetail = () => {
                   <div key={poi.id} className={styles.poiItem}>
                     <Typography variant="h6"> {poi.name} </Typography>
                     <Typography variant="subtitle1">
-                      {poi.type} | <span className={styles.distanceToPoi}>{CalculateDistance()} Kilometers</span>
+                      {poi.type} |{" "}
+                      <span className={styles.distanceToPoi}>
+                        {CalculateDistance()} Kilometers
+                      </span>
                     </Typography>
                   </div>
                 );

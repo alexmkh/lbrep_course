@@ -41,6 +41,11 @@ urlpatterns = (
             name="listing-create",
         ),
         path(
+            "api/listings/<int:pk>/delete/",
+            listing_api_views.ListingDelete.as_view(),
+            name="listing-create",
+        ),
+        path(
             "api/profiles/",
             user_api_views.ProfileList.as_view(),
             name="profile-list",
