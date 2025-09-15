@@ -412,13 +412,49 @@ const ListingDetail = () => {
         <Grid item xs={3} className={styles.poisContainer}>
           {state.listingInfo.listing_pois_within_10km.length > 0 ? (
             <div>
-              <Typography variant="h5" className={styles.poisTitle}>Points of Interest</Typography>
+              <Typography variant="h5" className={styles.poisTitle}>
+                Points of Interest
+              </Typography>
               {state.listingInfo.listing_pois_within_10km.map((poi) => {
+
+                function DegreeToRadians(degrees) {
+                  return (degrees * Math.PI) / 180;
+                }
+                // Calculate distance from listing to poi by the formula
+                function CalculateDistance() {
+                  const latitude1 = DegreeToRadians(state.listingInfo.latitude);
+                  const longitude1 = DegreeToRadians(state.listingInfo.longitude);
+                  const latitude2 = DegreeToRadians(poi.location.coordinates[0]);
+                  const longitude2 = DegreeToRadians(poi.location.coordinates[1]);
+                  // The formula
+                  const latDiff = latitude2 - latitude1;
+                  const lonDiff = longitude2 - longitude1;
+                  const R = 6371000 / 1000;
+
+                  const a =
+                    Math.sin(latDiff / 2) * Math.sin(latDiff / 2) +
+                    Math.cos(latitude1) *
+                      Math.cos(latitude2) *
+                      Math.sin(lonDiff / 2) *
+                      Math.sin(lonDiff / 2);
+                  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+                  const d = R * c;
+
+                  const dist =
+                    Math.acos(
+                      Math.sin(latitude1) * Math.sin(latitude2) +
+                        Math.cos(latitude1) *
+                          Math.cos(latitude2) *
+                          Math.cos(lonDiff)
+                    ) * R;
+                  return dist.toFixed(2);
+                }
                 return (
                   <div key={poi.id} className={styles.poiItem}>
                     <Typography variant="h6"> {poi.name} </Typography>
-                    <Typography variant="subtitle1" >
-                      {poi.type} | X Kilometers
+                    <Typography variant="subtitle1">
+                      {poi.type} | <span className={styles.distanceToPoi}>{CalculateDistance()} Kilometers</span>
                     </Typography>
                   </div>
                 );
