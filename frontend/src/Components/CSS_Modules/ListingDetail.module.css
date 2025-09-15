@@ -220,3 +220,30 @@
   padding: 5px;
 }
 
+.mapDiv {
+  height: 35rem;
+}
+
+.mapContainer {
+  margin-top: 1rem;
+}
+
+.poisTitle {
+  margin-bottom: 1rem;
+  font-weight: bolder;
+}
+
+.poisContainer {
+  height: 35rem;
+  overflow: auto;
+  /* border: 1px solid darkgray;
+  border-radius: 5px;
+  padding: 0.5rem; */
+}
+
+.poiItem {
+  margin-bottom: 0.5rem;
+  border: 1px solid darkgray;
+  border-radius: 5px;
+  padding-left: 0.5rem;
+}

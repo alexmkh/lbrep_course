@@ -10,6 +10,22 @@ import StateContext from "../Contexts/StateContext";
 import defaultBusinessMan from "./Assets/defaultBusinessman.jpg";
 import defaultAgencyImage from "./Assets/defaultAgencyImage.png";
 
+import stadiumIconPng from "./Assets/Mapicons/stadium.png";
+import universityIconPng from "./Assets/Mapicons/university.png";
+import hospitalIconPng from "./Assets/Mapicons/hospital.png";
+
+// React leaflet
+import {
+  MapContainer,
+  TileLayer,
+  useMap,
+  Marker,
+  Popup,
+  Polyline,
+  Polygon,
+} from "react-leaflet";
+import { Icon } from "leaflet";
+
 // CSS Modules
 import styles from "./CSS_Modules/ListingDetail.module.css";
 
@@ -47,6 +63,21 @@ const ListingDetail = () => {
   const GlobalState = useContext(StateContext);
 
   const { id } = useParams();
+
+  const stadiumIcon = new Icon({
+    iconUrl: stadiumIconPng,
+    iconSize: [40, 40],
+  });
+
+  const universityIcon = new Icon({
+    iconUrl: universityIconPng,
+    iconSize: [40, 40],
+  });
+
+  const hospitalIcon = new Icon({
+    iconUrl: hospitalIconPng,
+    iconSize: [40, 40],
+  });
 
   const initialState = {
     dataIsLoading: true,
@@ -333,7 +364,9 @@ const ListingDetail = () => {
             }
             alt="Profile"
             className={styles.profileImage}
-            onClick={() => navigate(`/agencies/${state.sellerProfileInfo.seller}`)}
+            onClick={() =>
+              navigate(`/agencies/${state.sellerProfileInfo.seller}`)
+            }
             // style={{ cursor: "pointer" }}
           />
         </Grid>
@@ -365,6 +398,82 @@ const ListingDetail = () => {
         </Grid>
         <Grid item className={styles.bioSection}>
           {state.sellerProfileInfo.bio && state.sellerProfileInfo.bio}
+        </Grid>
+      </Grid>
+
+      {/* Map */}
+      <Grid
+        item
+        container
+        className={styles.mapContainer}
+        spacing={1}
+        justifyContent="space-between"
+      >
+        <Grid item xs={3} className={styles.poisContainer}>
+          {state.listingInfo.listing_pois_within_10km.length > 0 ? (
+            <div>
+              <Typography variant="h5" className={styles.poisTitle}>Points of Interest</Typography>
+              {state.listingInfo.listing_pois_within_10km.map((poi) => {
+                return (
+                  <div key={poi.id} className={styles.poiItem}>
+                    <Typography variant="h6"> {poi.name} </Typography>
+                    <Typography variant="subtitle1" >
+                      {poi.type} | X Kilometers
+                    </Typography>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <Typography variant="h6">
+              No points of interest within 10 km.
+            </Typography>
+          )}
+        </Grid>
+        <Grid item xs={9} className={styles.mapDiv}>
+          <MapContainer
+            className={styles.map}
+            center={[state.listingInfo.latitude, state.listingInfo.longitude]}
+            zoom={14}
+            scrollWheelZoom={true}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <Marker
+              position={[
+                state.listingInfo.latitude,
+                state.listingInfo.longitude,
+              ]}
+            >
+              <Popup>{state.listingInfo.title}</Popup>
+            </Marker>
+            {/* Add more markers for points of interest if available */}
+            {state.listingInfo.listing_pois_within_10km.map((poi) => {
+              function PoiIcon() {
+                if (poi.type === "Stadium") {
+                  return stadiumIcon;
+                } else if (poi.type === "Hospital") {
+                  return hospitalIcon;
+                } else if (poi.type === "University") {
+                  return universityIcon;
+                }
+              }
+              return (
+                <Marker
+                  key={poi.id}
+                  position={[
+                    poi.location.coordinates[0],
+                    poi.location.coordinates[1],
+                  ]}
+                  icon={PoiIcon()}
+                >
+                  <Popup>{poi.name}</Popup>
+                </Marker>
+              );
+            })}
+          </MapContainer>
         </Grid>
       </Grid>
     </div>
