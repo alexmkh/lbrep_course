@@ -252,3 +252,7 @@
   font-weight: bolder;
   color: #04b904;
 }
+
+.buttonContainer {
+  margin-bottom: 0.6rem;
+}

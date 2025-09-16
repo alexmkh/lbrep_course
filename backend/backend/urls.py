@@ -43,7 +43,12 @@ urlpatterns = (
         path(
             "api/listings/<int:pk>/delete/",
             listing_api_views.ListingDelete.as_view(),
-            name="listing-create",
+            name="listing-delete",
+        ),
+        path(
+            "api/listings/<int:pk>/update/",
+            listing_api_views.ListingUpdate.as_view(),
+            name="listing-delete",
         ),
         path(
             "api/profiles/",

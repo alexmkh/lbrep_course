@@ -14,6 +14,9 @@ import stadiumIconPng from "./Assets/Mapicons/stadium.png";
 import universityIconPng from "./Assets/Mapicons/university.png";
 import hospitalIconPng from "./Assets/Mapicons/hospital.png";
 
+// Components
+import ListingUpdate from "./ListingUpdate.jsx";
+
 // React leaflet
 import {
   MapContainer,
@@ -47,6 +50,7 @@ import {
   CardActions,
   Breadcrumbs,
   Link,
+  Dialog,
 } from "@mui/material";
 
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
@@ -178,7 +182,6 @@ const ListingDetail = () => {
   }
 
   async function DeleteHandler() {
-
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this listing?"
     );
@@ -198,6 +201,16 @@ const ListingDetail = () => {
       }
     }
   }
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   if (state.dataIsLoading) {
     return (
@@ -418,17 +431,32 @@ const ListingDetail = () => {
             </Typography>
           </Grid>
         </Grid>
-        <Grid item className={styles.bioSection}>
+        {/* <Grid item className={styles.bioSection}>
           {state.sellerProfileInfo.bio && state.sellerProfileInfo.bio}
-        </Grid>
+        </Grid> */}
         {GlobalState.userId == state.listingInfo.seller ? (
-          <Grid item container justifyContent="space-around">
-            <Button variant="contained" color="primary">
+          <Grid
+            item
+            container
+            justifyContent="space-around"
+            className={styles.buttonContainer}
+          >
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleClickOpen}
+            >
               Update
             </Button>
             <Button variant="contained" color="error" onClick={DeleteHandler}>
               Delete
             </Button>
+            <Dialog open={open} onClose={handleClose} fullScreen>
+              <ListingUpdate
+                listingData={state.listingInfo}
+                closeDialog={handleClose}
+              />
+            </Dialog>
           </Grid>
         ) : (
           ""
