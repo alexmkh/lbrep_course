@@ -15,6 +15,7 @@ import {
   CardContent,
   CircularProgress,
   TextField,
+  Snackbar,
 } from "@mui/material";
 
 // Custom imports
@@ -31,6 +32,8 @@ const initialState = {
   passwordValue: "",
   sendRequest: 0,
   token: "",
+  openSnack: false,
+  disableBtn: false,
 };
 
 
@@ -55,6 +58,15 @@ function Login() {
       case "catchToken":
         draft.token = action.tokenValue;
         break;
+      case "openSnack":
+        draft.openSnack = true;
+        break;
+      case "disableTheButton":
+        draft.disableBtn = true;
+      case "allowTheButton":
+        draft.disableBtn = false;
+        break;
+
       default:
         return draft; // Return the current state if no action matches
     }
@@ -64,10 +76,8 @@ function Login() {
 
   const FormSubmit = (e) => {
     e.preventDefault();
-    // data.username = state.usernameValue;
-    // data.password = state.passwordValue;
-    // setSendRequest((prev) => !prev);
     dispatch({ type: "changeSendRequest" });
+    dispatch({ type: "disableTheButton" });
   };
 
   useEffect(() => {
@@ -94,6 +104,7 @@ function Login() {
           // navigate("/");
         } catch (error) {
           console.log("Error login:", error.response.data.non_field_errors[0]);
+          dispatch({ type: "allowTheButton"});
         }
       };
       SignIn();
@@ -122,7 +133,8 @@ function Login() {
             emailInfo: response.data.email,
             userIdInfo: response.data.id,
           });
-          navigate("/");
+          dispatch({ type: "openSnack"});
+          // navigate("/");
         } catch (error) {
           console.log("Error login:", error.response.data.non_field_errors[0]);
         }
@@ -133,6 +145,15 @@ function Login() {
       };
     }
   }, [state.token]);
+
+  useEffect(() => {
+    if (state.openSnack) {
+      const timer = setTimeout(() => {
+        navigate("/");
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [state.openSnack]);
 
   return (
     <div className={styles.formContainer}>
@@ -179,6 +200,7 @@ function Login() {
             color="primary"
             type="submit"
             fullWidth
+            disabled={state.disableBtn}
           >
             SIGN IN
           </Button>
@@ -200,6 +222,15 @@ function Login() {
           </span>
         </Typography>
       </Grid>
+      <Snackbar
+        open={state.openSnack}
+        message="You have successfully logged in."
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        // className={styles.snackbar}
+        // autoHideDuration={3000}
+        // ContentProps={{ style: { backgroundColor: "blue", color: "white" } }}
+        ContentProps={{class: styles.snackbar}}
+      />
     </div>
   );
 }

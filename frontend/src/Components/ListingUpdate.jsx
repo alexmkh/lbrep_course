@@ -133,7 +133,6 @@ function ListingUpdate({ listingData, closeDialog }) {
         formData.append("property_status", state.propertyStatusValue);
         formData.append("price", state.priceValue);
         formData.append("rental_frequency", state.rentalFrequencyValue);
-        // formData.append("rooms", state.roomsValue);
         formData.append("rooms", state.listingTypeValue === "Office" ? 0 : state.roomsValue);
         formData.append("furnished", state.furnishedValue);
         formData.append("pool", state.poolValue);
