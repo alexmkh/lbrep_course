@@ -58,11 +58,12 @@ function Login() {
       case "catchToken":
         draft.token = action.tokenValue;
         break;
-      case "openSnack":
+      case "openTheSnack":
         draft.openSnack = true;
         break;
       case "disableTheButton":
         draft.disableBtn = true;
+        break;
       case "allowTheButton":
         draft.disableBtn = false;
         break;
@@ -133,7 +134,7 @@ function Login() {
             emailInfo: response.data.email,
             userIdInfo: response.data.id,
           });
-          dispatch({ type: "openSnack"});
+          dispatch({ type: "openTheSnack"});
           // navigate("/");
         } catch (error) {
           console.log("Error login:", error.response.data.non_field_errors[0]);

@@ -15,6 +15,7 @@ import {
   CardContent,
   CircularProgress,
   TextField,
+  Snackbar,
 } from "@mui/material";
 
 // Custom imports
@@ -31,13 +32,14 @@ function Register() {
   const navigate = useNavigate();
   const URL = "http://localhost:8000/api-auth-djoser/users/";
 
-
   const initialState = {
     usernameValue: "",
     emailValue: "",
     passwordValue: "",
     password2Value: "",
     sendRequest: 0,
+    openSnack: false,
+    disableBtn: false,
   };
 
   const ReducerFunction = (draft, action) => {
@@ -57,6 +59,16 @@ function Register() {
       case "changeSendRequest":
         draft.sendRequest += 1;
         break;
+      case "openTheSnack":
+        draft.openSnack = true;
+        break;
+      case "disableTheButton":
+        draft.disableBtn = true;
+        break;
+      case "allowTheButton":
+        draft.disableBtn = false;
+        break;
+
       default:
         return draft; // Return the current state if no action matches
     }
@@ -71,7 +83,8 @@ function Register() {
     data.password = state.passwordValue;
     data.re_password = state.password2Value;
     // setSendRequest((prev) => !prev);
-    dispatch({type: 'changeSendRequest'});
+    dispatch({ type: "changeSendRequest" });
+    dispatch({ type: "disableTheButton" });
   };
 
   useEffect(() => {
@@ -83,9 +96,10 @@ function Register() {
             cancelToken: source.token,
           });
           console.log("User registered successfully:", response);
-          navigate("/");
+          dispatch({ type: "openTheSnack" });
         } catch (error) {
           console.error("Error registering user:", error, error.response.data);
+          dispatch({ type: "allowTheButton" });
         }
       };
       SignUp();
@@ -94,6 +108,15 @@ function Register() {
       };
     }
   }, [state.sendRequest]);
+
+  useEffect(() => {
+    if (state.openSnack) {
+      const timer = setTimeout(() => {
+        navigate("/");
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [state.openSnack]);
 
   return (
     <div className={styles.formContainer}>
@@ -171,6 +194,7 @@ function Register() {
             color="primary"
             type="submit"
             fullWidth
+            disabled={state.disableBtn}
           >
             SIGN UP
           </Button>
@@ -192,6 +216,16 @@ function Register() {
           </span>
         </Typography>
       </Grid>
+            <Snackbar
+              open={state.openSnack}
+              message="You have successfully created an account!"
+              anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+              // className={styles.snackbar}
+              // autoHideDuration={3000}
+              // ContentProps={{ style: { backgroundColor: "blue", color: "white" } }}
+              ContentProps={{class: styles.snackbar}}
+            />
+
     </div>
   );
 }
