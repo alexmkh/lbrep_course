@@ -21,7 +21,7 @@ import {
 // Custom imports
 import styles from "./CSS_Modules/Login.module.css";
 
-
+import { ToastSuccess } from "../plugins/Toast";
 
 // Contexts
 import DispatchContext from "../Contexts/DispatchContext";
@@ -35,7 +35,6 @@ const initialState = {
   openSnack: false,
   disableBtn: false,
 };
-
 
 function Login() {
   const navigate = useNavigate();
@@ -79,6 +78,7 @@ function Login() {
     e.preventDefault();
     dispatch({ type: "changeSendRequest" });
     dispatch({ type: "disableTheButton" });
+    dispatch({ type: "openTheSnack" });
   };
 
   useEffect(() => {
@@ -105,7 +105,7 @@ function Login() {
           // navigate("/");
         } catch (error) {
           console.log("Error login:", error.response.data.non_field_errors[0]);
-          dispatch({ type: "allowTheButton"});
+          dispatch({ type: "allowTheButton" });
         }
       };
       SignIn();
@@ -134,7 +134,7 @@ function Login() {
             emailInfo: response.data.email,
             userIdInfo: response.data.id,
           });
-          dispatch({ type: "openTheSnack"});
+          dispatch({ type: "openTheSnack" });
           // navigate("/");
         } catch (error) {
           console.log("Error login:", error.response.data.non_field_errors[0]);
@@ -149,6 +149,7 @@ function Login() {
 
   useEffect(() => {
     if (state.openSnack) {
+      ToastSuccess().fire("You have successfully logged in.");
       const timer = setTimeout(() => {
         navigate("/");
       }, 1500);
@@ -223,12 +224,12 @@ function Login() {
           </span>
         </Typography>
       </Grid>
-      <Snackbar
+      {/* <Snackbar
         open={state.openSnack}
         message="You have successfully logged in."
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         ContentProps={{class: styles.snackbar}}
-      />
+      /> */}
     </div>
   );
 }

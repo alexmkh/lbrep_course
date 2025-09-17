@@ -20,6 +20,8 @@ import {
 
 // Custom imports
 import styles from "./CSS_Modules/Register.module.css";
+// import { Toast } from "../plugins/Toast"; --- IGNORE ---
+import { ToastSuccess } from "../plugins/Toast";
 
 const data = {
   username: "testinguser",
@@ -111,6 +113,7 @@ function Register() {
 
   useEffect(() => {
     if (state.openSnack) {
+      ToastSuccess().fire("You have successfully created an account!");
       const timer = setTimeout(() => {
         navigate("/");
       }, 1500);
@@ -216,16 +219,15 @@ function Register() {
           </span>
         </Typography>
       </Grid>
-            <Snackbar
-              open={state.openSnack}
-              message="You have successfully created an account!"
-              anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-              // className={styles.snackbar}
-              // autoHideDuration={3000}
-              // ContentProps={{ style: { backgroundColor: "blue", color: "white" } }}
-              ContentProps={{class: styles.snackbar}}
-            />
-
+      {/* <Snackbar
+        open={state.openSnack}
+        message="You have successfully created an account!"
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        // className={styles.snackbar}
+        // autoHideDuration={3000}
+        // ContentProps={{ style: { backgroundColor: "blue", color: "white" } }}
+        ContentProps={{ class: styles.snackbar }}
+      /> */}
     </div>
   );
 }

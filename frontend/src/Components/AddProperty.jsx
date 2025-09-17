@@ -17,6 +17,8 @@ import {
 // Context
 import StateContext from "../Contexts/StateContext";
 
+import { ToastSuccess } from "../plugins/Toast";
+
 // Boroughs
 import Camden from "./Assets/Boroughs/Camden";
 import Greenwich from "./Assets/Boroughs/Greenwich";
@@ -903,6 +905,7 @@ function AddProperty() {
 
   useEffect(() => {
     if (state.openSnack) {
+      ToastSuccess().fire("You have successfully added your property.");
       const timer = setTimeout(() => {
         navigate("/listings");
       }, 1500);
@@ -1292,14 +1295,12 @@ function AddProperty() {
         </Grid>
       </form>
 
-
-      <Snackbar
+      {/* <Snackbar
         open={state.openSnack}
         message="You have successfully added your property."
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        ContentProps={{class: styles.snackbar}}
-      />
-
+        ContentProps={{ class: styles.snackbar }}
+      /> */}
     </div>
   );
 }
