@@ -16,6 +16,7 @@ import hospitalIconPng from "./Assets/Mapicons/hospital.png";
 
 // Components
 import ListingUpdate from "./ListingUpdate.jsx";
+import POIPhoto from "./POIPhoto.jsx";
 
 // React leaflet
 import {
@@ -575,7 +576,10 @@ const ListingDetail = () => {
                   ]}
                   icon={PoiIcon()}
                 >
-                  <Popup>{poi.name}</Popup>
+                  <Popup>
+                    <POIPhoto POI_Name={poi.name}/>
+                    {poi.name}
+                  </Popup>
                 </Marker>
               );
             })}
