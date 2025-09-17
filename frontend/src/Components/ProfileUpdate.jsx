@@ -23,6 +23,7 @@ import {
 import StateContext from "../Contexts/StateContext";
 
 import styles from "./CSS_Modules/Profile.module.css";
+import { ToastSuccess } from "../plugins/Toast";
 
 function ProfileUpdate(props) {
   // Global state
@@ -38,6 +39,8 @@ function ProfileUpdate(props) {
     uploadedPicture: [],
     profilePictureValue: props.userProfile.profilePic || "",
     sendRequest: 0,
+    disableBtn: false,
+    openSnack: false,
   };
 
   const ReducerFunction = (draft, action) => {
@@ -60,6 +63,15 @@ function ProfileUpdate(props) {
         break;
       case "changeSendRequest":
         draft.sendRequest = draft.sendRequest + 1;
+        break;
+      case "openTheSnack":
+        draft.openSnack = true;
+        break;
+      case "disableTheButton":
+        draft.disableBtn = true;
+        break;
+      case "allowTheButton":
+        draft.disableBtn = false;
         break;
 
       default:
@@ -98,21 +110,32 @@ function ProfileUpdate(props) {
             `http://localhost:8000/api/profiles/${GlobalState.userId}/update/`,
             formData
           );
-          console.log("Response data received");
-          console.log(response.data);
-          navigate(0); // Refresh the page
+          dispatch({ type: "openTheSnack" });
         } catch (e) {
           console.log("There was a problem or the request was cancelled.");
           console.log(e);
+          dispatch({ type: "allowTheButton" });
         }
       }
       UpdateProfile();
     }
   }, [state.sendRequest]);
 
+    useEffect(() => {
+      if (state.openSnack) {
+        ToastSuccess().fire("You have successfully updated an account!");
+        const timer = setTimeout(() => {
+          navigate(0);
+        }, 1500);
+        return () => clearTimeout(timer);
+      }
+    }, [state.openSnack]);
+
+
   const FormSubmit = (e) => {
     e.preventDefault();
     dispatch({ type: "changeSendRequest" });
+    dispatch({ type: "disableTheButton" });
   };
 
 	function ProfilePictureDisplay() {
@@ -232,6 +255,7 @@ function ProfileUpdate(props) {
               color="primary"
               type="submit"
               fullWidth
+              disabled={state.disableBtn}
             >
               UPDATE
             </Button>
