@@ -99,3 +99,10 @@
   height: 35rem;
   margin-top: 1rem;
 }
+
+.snackbar {
+  background-color: #4b4beb;
+  color: white;
+  padding: 0.2rem 1rem 0.2rem 1rem;
+  border-radius: 4px;
+}

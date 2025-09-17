@@ -227,9 +227,6 @@ function Login() {
         open={state.openSnack}
         message="You have successfully logged in."
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-        // className={styles.snackbar}
-        // autoHideDuration={3000}
-        // ContentProps={{ style: { backgroundColor: "blue", color: "white" } }}
         ContentProps={{class: styles.snackbar}}
       />
     </div>

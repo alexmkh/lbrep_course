@@ -66,6 +66,7 @@ import {
   TextField,
   FormControlLabel,
   Checkbox,
+  Snackbar,
 } from "@mui/material";
 
 // Custom imports
@@ -243,7 +244,6 @@ const rentalFrequencyOptions = [
   { value: "Day", label: "Day" },
 ];
 
-
 function AddProperty() {
   const navigate = useNavigate();
   const GlobalState = useContext(StateContext);
@@ -281,7 +281,9 @@ function AddProperty() {
     userProfile: {
       agencyName: "",
       phoneNumber: "",
-    }
+    },
+    openSnack: false,
+    disableBtn: false,
   };
 
   const ReducerFunction = (draft, action) => {
@@ -367,6 +369,15 @@ function AddProperty() {
       case "catchUserProfileInfo":
         draft.userProfile.agencyName = action.profileObject.agency_name;
         draft.userProfile.phoneNumber = action.profileObject.phone_number;
+        break;
+      case "openTheSnack":
+        draft.openSnack = true;
+        break;
+      case "disableTheButton":
+        draft.disableBtn = true;
+        break;
+      case "allowTheButton":
+        draft.disableBtn = false;
         break;
 
       default:
@@ -764,6 +775,7 @@ function AddProperty() {
     e.preventDefault();
     console.log("Form submitted");
     dispatch({ type: "changeSendRequest" });
+    dispatch({ type: "disableTheButton" });
   };
 
   // Use effect to send the form data to the backend
@@ -795,19 +807,18 @@ function AddProperty() {
         formData.append("picture_5", state.picture5Value);
         formData.append("seller", GlobalState.userId);
         try {
-          const response = await Axios.post(URL, formData,
-            {
-              headers: { "Content-Type": "multipart/form-data" },
-              // withCredentials: true,
-              cancelToken: ourRequest.token,
-            }
-          );
+          const response = await Axios.post(URL, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+            // withCredentials: true,
+            cancelToken: ourRequest.token,
+          });
           console.log("Response data received");
           console.log(response.data);
-          navigate("/listings");
+          dispatch({ type: "openTheSnack" });
         } catch (e) {
+          dispatch({ type: "allowTheButton" });
           console.log("There was a problem or the request was cancelled.");
-          console.log(e);
+          console.log(e.response);
         }
       }
       AddProperty();
@@ -826,7 +837,11 @@ function AddProperty() {
   };
 
   const SubmitButtonDisplay = () => {
-    if (GlobalState.userIsLogged && state.userProfile.agencyName && state.userProfile.phoneNumber) {
+    if (
+      GlobalState.userIsLogged &&
+      state.userProfile.agencyName &&
+      state.userProfile.phoneNumber
+    ) {
       return (
         <Button
           className={styles.registerBtn}
@@ -834,11 +849,15 @@ function AddProperty() {
           color="primary"
           type="submit"
           fullWidth
+          disabled={state.disableBtn}
         >
           SUBMIT
         </Button>
       );
-    } else if (GlobalState.userIsLogged && (!state.userProfile.agencyName || !state.userProfile.phoneNumber)) {
+    } else if (
+      GlobalState.userIsLogged &&
+      (!state.userProfile.agencyName || !state.userProfile.phoneNumber)
+    ) {
       return (
         <Button
           className={styles.registerBtn}
@@ -881,6 +900,15 @@ function AddProperty() {
     }),
     []
   );
+
+  useEffect(() => {
+    if (state.openSnack) {
+      const timer = setTimeout(() => {
+        navigate("/listings");
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [state.openSnack]);
 
   return (
     <div className={styles.formContainer}>
@@ -1264,13 +1292,14 @@ function AddProperty() {
         </Grid>
       </form>
 
-      <Button
-        onClick={() =>
-          console.log(state.uploadedPictures, state.uploadedPictures?.length)
-        }
-      >
-        TEST BUTTON
-      </Button>
+
+      <Snackbar
+        open={state.openSnack}
+        message="You have successfully added your property."
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        ContentProps={{class: styles.snackbar}}
+      />
+
     </div>
   );
 }
