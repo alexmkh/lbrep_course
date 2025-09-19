@@ -79,6 +79,9 @@ function Login() {
     dispatch({ type: "changeSendRequest" });
     dispatch({ type: "disableTheButton" });
     dispatch({ type: "openTheSnack" });
+    ToastSuccess().fire("You have successfully logged in.").then(() => {
+      navigate("/");
+    });
   };
 
   useEffect(() => {
@@ -147,15 +150,15 @@ function Login() {
     }
   }, [state.token]);
 
-  useEffect(() => {
-    if (state.openSnack) {
-      ToastSuccess().fire("You have successfully logged in.");
-      const timer = setTimeout(() => {
-        navigate("/");
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [state.openSnack]);
+  // useEffect(() => {
+  //   if (state.openSnack) {
+  //     ToastSuccess().fire("You have successfully logged in.");
+  //     const timer = setTimeout(() => {
+  //       navigate("/");
+  //     }, 1500);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [state.openSnack]);
 
   return (
     <div className={styles.formContainer}>

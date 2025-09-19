@@ -87,6 +87,9 @@ function Register() {
     // setSendRequest((prev) => !prev);
     dispatch({ type: "changeSendRequest" });
     dispatch({ type: "disableTheButton" });
+    ToastSuccess().fire("You have successfully created an account!").then(() => {
+      navigate("/");
+    })
   };
 
   useEffect(() => {
@@ -111,15 +114,15 @@ function Register() {
     }
   }, [state.sendRequest]);
 
-  useEffect(() => {
-    if (state.openSnack) {
-      ToastSuccess().fire("You have successfully created an account!");
-      const timer = setTimeout(() => {
-        navigate("/");
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [state.openSnack]);
+  // useEffect(() => {
+  //   if (state.openSnack) {
+  //     ToastSuccess().fire("You have successfully created an account!");
+  //     const timer = setTimeout(() => {
+  //       navigate("/");
+  //     }, 1500);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [state.openSnack]);
 
   return (
     <div className={styles.formContainer}>

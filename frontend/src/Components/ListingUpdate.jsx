@@ -24,6 +24,7 @@ import {
 
 // Custom imports
 import styles from "./CSS_Modules/ListingUpdate.module.css";
+import { ToastSuccess } from "../plugins/Toast";
 
 const listingTypeOptions = [
   { value: "", label: "" },
@@ -64,6 +65,7 @@ function ListingUpdate({ listingData, closeDialog }) {
     cctvValue: listingData.cctv || false,
     parkingValue: listingData.parking || false,
     sendRequest: 0,
+    disableBtn: false,
   };
 
   const ReducerFunction = (draft, action) => {
@@ -107,6 +109,12 @@ function ListingUpdate({ listingData, closeDialog }) {
       case "changeSendRequest":
         draft.sendRequest = draft.sendRequest + 1;
         break;
+      case "disableTheButton":
+        draft.disableBtn = true;
+        break;
+      case "allowTheButton":
+        draft.disableBtn = false;
+        break;
 
       default:
         return draft; // Return the current state if no action matches
@@ -119,6 +127,10 @@ function ListingUpdate({ listingData, closeDialog }) {
     e.preventDefault();
     console.log("Form submitted");
     dispatch({ type: "changeSendRequest" });
+    dispatch({ type: "disableTheButton" });
+    // ToastSuccess().fire("Your property is being updated...").then(() => {
+    //   // navigate(0);
+    // });
   };
 
   // Use effect to send the form data to the backend
@@ -147,9 +159,13 @@ function ListingUpdate({ listingData, closeDialog }) {
             // withCredentials: true,
             cancelToken: ourRequest.token,
           });
-          console.log("Response data received");
-          console.log(response.data);
-          navigate(0);
+          ToastSuccess().fire("You have successfully updated your property.").then(() => {
+            dispatch({ type: "allowTheButton" });
+            navigate(0);
+          });
+          // console.log("Response data received");
+          // console.log(response.data);
+          // navigate(0);
         } catch (e) {
           console.log("There was a problem or the request was cancelled.");
           console.log(e);
@@ -444,6 +460,7 @@ function ListingUpdate({ listingData, closeDialog }) {
             color="primary"
             type="submit"
             fullWidth
+            disabled={state.disableBtn}
           >
             UPDATE
           </Button>

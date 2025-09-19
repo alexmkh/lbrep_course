@@ -101,7 +101,10 @@ function ProfileUpdate(props) {
         formData.append("phone_number", state.phoneNumberValue);
         formData.append("bio", state.bioValue);
         formData.append("seller", GlobalState.userId);
-        if (state.profilePictureValue !== null && typeof state.profilePictureValue !== "string") {
+        if (
+          state.profilePictureValue !== null &&
+          typeof state.profilePictureValue !== "string"
+        ) {
           formData.append("profile_picture", state.profilePictureValue);
         }
 
@@ -121,49 +124,49 @@ function ProfileUpdate(props) {
     }
   }, [state.sendRequest]);
 
-    useEffect(() => {
-      if (state.openSnack) {
-        ToastSuccess().fire("You have successfully updated an account!");
-        const timer = setTimeout(() => {
-          navigate(0);
-        }, 1500);
-        return () => clearTimeout(timer);
-      }
-    }, [state.openSnack]);
-
+  // useEffect(() => {
+  //   if (state.openSnack) {
+  //     ToastSuccess().fire("You have successfully updated an account!");
+  //     const timer = setTimeout(() => {
+  //       navigate(0);
+  //     }, 1500);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [state.openSnack]);
 
   const FormSubmit = (e) => {
     e.preventDefault();
     dispatch({ type: "changeSendRequest" });
     dispatch({ type: "disableTheButton" });
+    ToastSuccess().fire("You have successfully updated an account!").then(() => {
+      // dispatch({ type: "allowTheButton" });
+      navigate(0);
+    })
+
   };
 
-	function ProfilePictureDisplay() {
-		if (typeof state.profilePictureValue !== "string") {
-			return (
-				<ul>
-					{state.profilePictureValue ? (
-						<li>{state.profilePictureValue.name}</li>
-					) : (
-						""
-					)}
-				</ul>
-			);
-		} else if (typeof state.profilePictureValue === "string") {
-			return (
-				<Grid
-					item
-          className={styles.avatarGridItem}
-				>
-					<img
-						src={props.userProfile.profilePic}
+  function ProfilePictureDisplay() {
+    if (typeof state.profilePictureValue !== "string") {
+      return (
+        <ul>
+          {state.profilePictureValue ? (
+            <li>{state.profilePictureValue.name}</li>
+          ) : (
+            ""
+          )}
+        </ul>
+      );
+    } else if (typeof state.profilePictureValue === "string") {
+      return (
+        <Grid item className={styles.avatarGridItem}>
+          <img
+            src={props.userProfile.profilePic}
             className={styles.avatarImage}
-					/>
-				</Grid>
-			);
-		}
-	}
-
+          />
+        </Grid>
+      );
+    }
+  }
 
   return (
     <>

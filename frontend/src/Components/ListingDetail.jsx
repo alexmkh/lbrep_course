@@ -32,6 +32,7 @@ import { Icon } from "leaflet";
 
 // CSS Modules
 import styles from "./CSS_Modules/ListingDetail.module.css";
+import { ToastSuccess } from "../plugins/Toast.js";
 
 // MUI imports
 import {
@@ -88,6 +89,8 @@ const ListingDetail = () => {
     dataIsLoading: true,
     listingInfo: "",
     sellerProfileInfo: "",
+    disableBtn: false,
+    openSnack: false,
   };
 
   const ReducerFunction = (draft, action) => {
@@ -102,6 +105,15 @@ const ListingDetail = () => {
 
       case "loadingDone":
         draft.dataIsLoading = false;
+        break;
+      case "disableTheButton":
+        draft.disableBtn = true;
+        break;
+      case "allowTheButton":
+        draft.disableBtn = false;
+        break;
+      case "openTheSnack":
+        draft.openSnack = true;
         break;
 
       default:
@@ -187,6 +199,7 @@ const ListingDetail = () => {
       "Are you sure you want to delete this listing?"
     );
     if (confirmDelete) {
+      dispatch({ type: "disableTheButton" });
       try {
         const response = await Axios.delete(
           `http://localhost:8000/api/listings/${id}/delete/`,
@@ -195,8 +208,13 @@ const ListingDetail = () => {
           }
         );
         console.log("Listing deleted");
-        navigate("/listings");
+        ToastSuccess().fire("You have successfully deleted your property.").then(() => {
+          dispatch({ type: "allowTheButton" });
+          navigate("/listings");
+        })
+
       } catch (e) {
+        dispatch({ type: "allowTheButton" });
         console.log("There was a problem or the request was cancelled.");
         console.log(e.response.data);
       }
@@ -449,7 +467,7 @@ const ListingDetail = () => {
             >
               Update
             </Button>
-            <Button variant="contained" color="error" onClick={DeleteHandler}>
+            <Button variant="contained" color="error" onClick={DeleteHandler} disabled={state.disableBtn}>
               Delete
             </Button>
             <Dialog open={open} onClose={handleClose} fullScreen>

@@ -775,9 +775,11 @@ function AddProperty() {
 
   const FormSubmit = (e) => {
     e.preventDefault();
-    console.log("Form submitted");
     dispatch({ type: "changeSendRequest" });
     dispatch({ type: "disableTheButton" });
+    ToastSuccess().fire("Your property is being added...").then(() => {
+      navigate("/listings");
+    });
   };
 
   // Use effect to send the form data to the backend
@@ -903,15 +905,15 @@ function AddProperty() {
     []
   );
 
-  useEffect(() => {
-    if (state.openSnack) {
-      ToastSuccess().fire("You have successfully added your property.");
-      const timer = setTimeout(() => {
-        navigate("/listings");
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [state.openSnack]);
+  // useEffect(() => {
+  //   if (state.openSnack) {
+  //     ToastSuccess().fire("You have successfully added your property.");
+  //     const timer = setTimeout(() => {
+  //       navigate("/listings");
+  //     }, 1500);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [state.openSnack]);
 
   return (
     <div className={styles.formContainer}>

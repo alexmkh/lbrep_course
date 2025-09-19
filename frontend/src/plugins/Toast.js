@@ -5,7 +5,7 @@ function Toast() {
     toast: true,
     position: "top",
     showConfirmButton: false,
-    timer: 1500,
+    timer: 4500,
     timerProgressBar: true,
     color: "red",
   });

@@ -12,6 +12,7 @@ import { MenuItem } from "@mui/material";
 
 // Custom styles
 import styles from "./CSS_Modules/Home.module.css";
+import { ToastSuccess } from "../plugins/Toast";
 
 // Contexts
 import StateContext from "../Contexts/StateContext";
@@ -36,6 +37,8 @@ function Header() {
     navigate("/profile");
   };
 
+  const [openToast, setOpenToast] = React.useState(false);
+
   async function HandleLogout() {
     setAnchorEl(null);
     const confirmLogout = window.confirm("Are you sure you want to log out?");
@@ -50,7 +53,8 @@ function Header() {
       });
       console.log("Logout response:", response);
       GlobalDispatch({ type: "logout" });
-      navigate("/");
+      ToastSuccess().fire("You have successfully logged out.").then(() => navigate("/"));
+
     } catch (error) {
       console.log("Error logging out:", error.response);
     }
