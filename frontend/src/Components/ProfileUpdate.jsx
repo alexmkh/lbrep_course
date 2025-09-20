@@ -114,6 +114,13 @@ function ProfileUpdate(props) {
             formData
           );
           dispatch({ type: "openTheSnack" });
+              ToastSuccess()
+                .fire("You have successfully updated an account!")
+                .then(() => {
+                  dispatch({ type: "allowTheButton" });
+                  navigate(0);
+                });
+
         } catch (e) {
           console.log("There was a problem or the request was cancelled.");
           console.log(e);
@@ -138,10 +145,6 @@ function ProfileUpdate(props) {
     e.preventDefault();
     dispatch({ type: "changeSendRequest" });
     dispatch({ type: "disableTheButton" });
-    ToastSuccess().fire("You have successfully updated an account!").then(() => {
-      // dispatch({ type: "allowTheButton" });
-      navigate(0);
-    })
 
   };
 

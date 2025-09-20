@@ -16,6 +16,7 @@ import {
   CircularProgress,
   TextField,
   Snackbar,
+  Alert,
 } from "@mui/material";
 
 // Custom imports
@@ -34,6 +35,8 @@ const initialState = {
   token: "",
   openSnack: false,
   disableBtn: false,
+  serverError: false,
+  errorMessage: "",
 };
 
 function Login() {
@@ -47,9 +50,11 @@ function Login() {
     switch (action.type) {
       case "catchUsernameChange":
         draft.usernameValue = action.usernameChosen;
+        draft.serverError = false;
         break;
       case "catchPasswordChange":
         draft.passwordValue = action.passwordChosen;
+        draft.serverError = false;
         break;
       case "changeSendRequest":
         draft.sendRequest += 1;
@@ -66,6 +71,15 @@ function Login() {
       case "allowTheButton":
         draft.disableBtn = false;
         break;
+      case "catchServerError":
+        draft.serverError = true;
+        break;
+      case "serverErrorFalse":
+        draft.serverError = false;
+        break;
+      case "errorMessage":
+        draft.errorMessage = action.errorInfo;
+        break;
 
       default:
         return draft; // Return the current state if no action matches
@@ -79,9 +93,6 @@ function Login() {
     dispatch({ type: "changeSendRequest" });
     dispatch({ type: "disableTheButton" });
     dispatch({ type: "openTheSnack" });
-    ToastSuccess().fire("You have successfully logged in.").then(() => {
-      navigate("/");
-    });
   };
 
   useEffect(() => {
@@ -105,9 +116,17 @@ function Login() {
             type: "catchToken",
             tokenValue: response.data.auth_token,
           });
+          ToastSuccess()
+            .fire("You have successfully logged in.")
+            .then(() => {
+              navigate("/");
+            });
+
           // navigate("/");
         } catch (error) {
+          dispatch({ type: "catchServerError" });
           console.log("Error login:", error.response.data.non_field_errors[0]);
+          dispatch({ type: "errorMessage", errorInfo: error.response.data.non_field_errors[0] });
           dispatch({ type: "allowTheButton" });
         }
       };
@@ -140,6 +159,7 @@ function Login() {
           dispatch({ type: "openTheSnack" });
           // navigate("/");
         } catch (error) {
+
           console.log("Error login:", error.response.data.non_field_errors[0]);
         }
       };
@@ -166,19 +186,28 @@ function Login() {
         <Grid item container justifyContent="center">
           <Typography variant="h4">SIGN IN</Typography>
         </Grid>
+
+        {state.serverError && (
+          <Grid item container justifyContent="center" sx={{ mt: 2 }}>
+            <Alert severity="error"> {state.errorMessage} </Alert>
+          </Grid>
+        )}
+
         <Grid item container className={styles.formItem}>
           <TextField
             id="username"
             label="Username"
             variant="outlined"
             fullWidth
+            value={state.usernameValue}
             onChange={(e) =>
               dispatch({
                 type: "catchUsernameChange",
                 usernameChosen: e.target.value,
               })
             }
-            value={state.usernameValue}
+            error={state.serverError}
+            onFocus={() => dispatch({ type: "serverErrorFalse" })}
           />
         </Grid>
 
@@ -189,13 +218,15 @@ function Login() {
             variant="outlined"
             fullWidth
             type="password"
+            value={state.passwordValue}
             onChange={(e) =>
               dispatch({
                 type: "catchPasswordChange",
                 passwordChosen: e.target.value,
               })
             }
-            value={state.passwordValue}
+            error={state.serverError}
+            onFocus={() => dispatch({ type: "serverErrorFalse" })}
           />
         </Grid>
         <Grid item container className={styles.loginDiv} xs={8}>
