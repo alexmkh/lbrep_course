@@ -46,6 +46,18 @@ function Register() {
       hasErrors: false,
       errorMessage: "",
     },
+    emailErrors: {
+      hasErrors: false,
+      errorMessage: "",
+    },
+    passwordErrors: {
+      hasErrors: false,
+      errorMessage: "",
+    },
+    password2Errors: {
+      hasErrors: false,
+      errorMessage: "",
+    },
   };
 
   const ReducerFunction = (draft, action) => {
@@ -57,6 +69,8 @@ function Register() {
         break;
       case "catchEmailChange":
         draft.emailValue = action.emailChosen;
+        draft.emailErrors.hasErrors = false;
+        draft.emailErrors.errorMessage = "";
         break;
       case "catchPasswordChange":
         draft.passwordValue = action.passwordChosen;
@@ -91,6 +105,22 @@ function Register() {
         } else {
           draft.userNameErrors.hasErrors = false;
           draft.userNameErrors.errorMessage = "";
+        }
+        break;
+      case "catchEmailErrors":
+        if (action.emailChosen == "") {
+          draft.emailErrors.hasErrors = true;
+          draft.emailErrors.errorMessage = "Email cannot be empty.";
+        } else if (
+          !/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+            action.emailChosen
+          )
+        ) {
+          draft.emailErrors.hasErrors = true;
+          draft.emailErrors.errorMessage = "Invalid email address.";
+        } else {
+          draft.emailErrors.hasErrors = false;
+          draft.emailErrors.errorMessage = "";
         }
         break;
 
@@ -192,6 +222,14 @@ function Register() {
                 emailChosen: e.target.value,
               })
             }
+            onBlur={(e) =>
+              dispatch({
+                type: "catchEmailErrors",
+                emailChosen: e.target.value,
+              })
+            }
+            error={state.emailErrors.hasErrors}
+            helperText={state.emailErrors.errorMessage}
           />
         </Grid>
         <Grid item container className={styles.formItem}>
