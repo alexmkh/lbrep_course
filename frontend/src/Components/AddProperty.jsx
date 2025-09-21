@@ -69,6 +69,7 @@ import {
   FormControlLabel,
   Checkbox,
   Snackbar,
+  Alert,
 } from "@mui/material";
 
 // Custom imports
@@ -286,6 +287,26 @@ function AddProperty() {
     },
     openSnack: false,
     disableBtn: false,
+    listingTypeErrors: {
+      hasErrors: false,
+      errorMessage: "",
+    },
+    propertyStatusErrors: {
+      hasErrors: false,
+      errorMessage: "",
+    },
+    priceErrors: {
+      hasErrors: false,
+      errorMessage: "",
+    },
+    areaErrors: {
+      hasErrors: false,
+      errorMessage: "",
+    },
+    boroughErrors: {
+      hasErrors: false,
+      errorMessage: "",
+    },
   };
 
   const ReducerFunction = (draft, action) => {
@@ -834,9 +855,9 @@ function AddProperty() {
 
   const PriceDisplay = () => {
     if (state.propertyStatusValue === "Rent" && state.rentalFrequencyValue) {
-      return "Price (per " + state.rentalFrequencyValue + ")*";
+      return "Price (per " + state.rentalFrequencyValue + ")";
     } else {
-      return "Price*";
+      return "Price";
     }
   };
 
@@ -924,7 +945,7 @@ function AddProperty() {
         <Grid item container className={styles.formItem}>
           <TextField
             id="title"
-            label="Title*"
+            label="Title"
             variant="standard"
             fullWidth
             value={state.titleValue}
@@ -934,6 +955,7 @@ function AddProperty() {
                 titleChosen: e.target.value,
               })
             }
+            required
           />
         </Grid>
 
@@ -942,7 +964,7 @@ function AddProperty() {
           <Grid item className={styles.formItemSideBySide}>
             <TextField
               id="listingType"
-              label="Listing Type*"
+              label="Listing Type"
               variant="standard"
               fullWidth
               value={state.listingTypeValue}
@@ -954,6 +976,7 @@ function AddProperty() {
               }
               select
               SelectProps={{ native: true }}
+              required
             >
               {listingTypeOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -967,7 +990,7 @@ function AddProperty() {
           <Grid item className={styles.formItemSideBySide}>
             <TextField
               id="propertyStatus"
-              label="Property Status*"
+              label="Property Status"
               variant="standard"
               fullWidth
               value={state.propertyStatusValue}
@@ -979,6 +1002,7 @@ function AddProperty() {
               }
               select
               SelectProps={{ native: true }}
+              required
             >
               {propertyStatusOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -1006,6 +1030,7 @@ function AddProperty() {
               }
               select
               SelectProps={{ native: true }}
+              required={state.propertyStatusValue === "Rent"}
             >
               {rentalFrequencyOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -1030,6 +1055,7 @@ function AddProperty() {
                   priceChosen: e.target.value,
                 })
               }
+              required
             />
           </Grid>
         </Grid>
@@ -1166,7 +1192,7 @@ function AddProperty() {
           <Grid className={styles.formItemSideBySide}>
             <TextField
               id="area"
-              label="Area*"
+              label="Area"
               variant="standard"
               fullWidth
               value={state.areaValue}
@@ -1192,7 +1218,7 @@ function AddProperty() {
           <Grid className={styles.formItemSideBySide}>
             <TextField
               id="borough"
-              label="Borough*"
+              label="Borough"
               variant="standard"
               fullWidth
               value={state.boroughValue}
@@ -1226,8 +1252,20 @@ function AddProperty() {
           </Grid>
         </Grid>
 
+        <Grid item className={styles.formItem} >
+        {state.latitudeValue && state.longitudeValue ? (
+          <Alert severity="success">
+              Your property is located @ {state.latitudeValue},{" "} {state.longitudeValue}
+          </Alert>
+        ) : (
+          <Alert severity="warning">
+              Please drag the marker on the map to set the exact location of your property.
+          </Alert>
+        )}
+        </Grid>
+
         {/* Map */}
-        <Grid item container className={styles.formItem}>
+        <Grid item container >
           <MapContainer
             className={styles.map}
             center={[51.505, -0.09]}
