@@ -74,6 +74,8 @@ function Register() {
         break;
       case "catchPasswordChange":
         draft.passwordValue = action.passwordChosen;
+        draft.passwordErrors.hasErrors = false;
+        draft.passwordErrors.errorMessage = "";
         break;
       case "catchPassword2Change":
         draft.password2Value = action.password2Chosen;
@@ -121,6 +123,31 @@ function Register() {
         } else {
           draft.emailErrors.hasErrors = false;
           draft.emailErrors.errorMessage = "";
+        }
+        break;
+      case "catchPasswordErrors":
+        if (action.passwordChosen == "") {
+          draft.passwordErrors.hasErrors = true;
+          draft.passwordErrors.errorMessage = "Password cannot be empty.";
+        } else if (action.passwordChosen.length < 8) {
+          draft.passwordErrors.hasErrors = true;
+          draft.passwordErrors.errorMessage =
+            "Password must be at least 8 characters long.";
+        } else if (!/[a-z]/.test(action.passwordChosen)) {
+          draft.passwordErrors.hasErrors = true;
+          draft.passwordErrors.errorMessage =
+            "Password must contain at least one lowercase letter.";
+        } else if (!/[A-Z]/.test(action.passwordChosen)) {
+          draft.passwordErrors.hasErrors = true;
+          draft.passwordErrors.errorMessage =
+            "Password must contain at least one uppercase letter.";
+        } else if (!/[0-9]/.test(action.passwordChosen)) {
+          draft.passwordErrors.hasErrors = true;
+          draft.passwordErrors.errorMessage =
+            "Password must contain at least one number.";
+        } else {
+          draft.passwordErrors.hasErrors = false;
+          draft.passwordErrors.errorMessage = "";
         }
         break;
 
@@ -246,6 +273,15 @@ function Register() {
                 passwordChosen: e.target.value,
               })
             }
+            onBlur={(e) => {
+                dispatch({
+                  type: "catchPasswordErrors",
+                  passwordChosen: e.target.value,
+                });
+              }
+            }
+            error={state.passwordErrors.hasErrors}
+            helperText={state.passwordErrors.errorMessage}
           />
         </Grid>
         <Grid item container className={styles.formItem}>
