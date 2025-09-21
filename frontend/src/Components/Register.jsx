@@ -16,6 +16,7 @@ import {
   CircularProgress,
   TextField,
   Snackbar,
+  Alert,
 } from "@mui/material";
 
 // Custom imports
@@ -54,10 +55,9 @@ function Register() {
       hasErrors: false,
       errorMessage: "",
     },
-    password2Errors: {
-      hasErrors: false,
-      errorMessage: "",
-    },
+    password2HelperText: "",
+    serverError: false,
+    errorMessage: "",
   };
 
   const ReducerFunction = (draft, action) => {
@@ -66,19 +66,27 @@ function Register() {
         draft.usernameValue = action.usernameChosen;
         draft.userNameErrors.hasErrors = false;
         draft.userNameErrors.errorMessage = "";
+        draft.serverError = false;
         break;
       case "catchEmailChange":
         draft.emailValue = action.emailChosen;
         draft.emailErrors.hasErrors = false;
         draft.emailErrors.errorMessage = "";
+        draft.serverError = false;
         break;
       case "catchPasswordChange":
         draft.passwordValue = action.passwordChosen;
         draft.passwordErrors.hasErrors = false;
         draft.passwordErrors.errorMessage = "";
+        draft.serverError = false;
         break;
       case "catchPassword2Change":
         draft.password2Value = action.password2Chosen;
+        draft.password2HelperText =
+          action.password2Chosen !== draft.passwordValue
+            ? "Passwords do not match."
+            : "";
+        draft.serverError = false;
         break;
       case "changeSendRequest":
         draft.sendRequest += 1;
@@ -150,6 +158,15 @@ function Register() {
           draft.passwordErrors.errorMessage = "";
         }
         break;
+      case "catchServerError":
+        draft.serverError = true;
+        break;
+      case "serverErrorFalse":
+        draft.serverError = false;
+        break;
+      case "errorMessage":
+        draft.errorMessage = action.errorInfo;
+        break;
 
       default:
         return draft; // Return the current state if no action matches
@@ -165,15 +182,22 @@ function Register() {
     data.password = state.passwordValue;
     data.re_password = state.password2Value;
     // setSendRequest((prev) => !prev);
+    if (
+      state.userNameErrors.hasErrors ||
+      state.emailErrors.hasErrors ||
+      state.passwordErrors.hasErrors ||
+      state.password2Value !== state.passwordValue ||
+      state.usernameValue == "" ||
+      state.emailValue == "" ||
+      state.passwordValue == "" ||
+      state.password2Value == ""
+    ) {
+      return;
+    }
     dispatch({ type: "changeSendRequest" });
     dispatch({ type: "disableTheButton" });
-    ToastSuccess()
-      .fire("You have successfully created an account!")
-      .then(() => {
-        navigate("/");
-      });
+    dispatch({ type: "openTheSnack" });
   };
-
   useEffect(() => {
     if (state.sendRequest) {
       const source = Axios.CancelToken.source();
@@ -182,11 +206,38 @@ function Register() {
           const response = await Axios.post(URL, data, {
             cancelToken: source.token,
           });
-          console.log("User registered successfully:", response);
-          dispatch({ type: "openTheSnack" });
+          ToastSuccess()
+            .fire(
+              "You have successfully created an account!" +
+                "\n" +
+                response.data.id
+            )
+            .then(() => {
+              navigate("/");
+            });
         } catch (error) {
-          console.error("Error registering user:", error, error.response.data);
+          console.error("Error registering user:", error.response.data);
           dispatch({ type: "allowTheButton" });
+          let errorMessage = "";
+          if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            const errorData = error.response.data;
+            for (const key in errorData) {
+              if (Array.isArray(errorData[key])) {
+                errorMessage += `${key}: ${errorData[key].join(" ")}\n`;
+              } else {
+                errorMessage += `${key}: ${errorData[key]}\n`;
+              }
+            }
+          }
+          console.log("Compiled Error Message:", errorMessage);
+          dispatch({ type: "errorMessage", errorInfo: errorMessage });
+          dispatch({ type: "catchServerError" });
+          // Optionally, you can set a generic error message if needed
+          // dispatch({ type: "errorMessage", errorInfo: "An error occurred during registration. Please try again." });
+          // Example of rendering the error message in an Alert component
+          //
         }
       };
       SignUp();
@@ -196,22 +247,32 @@ function Register() {
     }
   }, [state.sendRequest]);
 
-  // useEffect(() => {
-  //   if (state.openSnack) {
-  //     ToastSuccess().fire("You have successfully created an account!");
-  //     const timer = setTimeout(() => {
-  //       navigate("/");
-  //     }, 1500);
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [state.openSnack]);
-
   return (
     <div className={styles.formContainer}>
       <form onSubmit={FormSubmit}>
         <Grid item container justifyContent="center">
           <Typography variant="h4">CREATE AN ACCOUNT</Typography>
         </Grid>
+        {state.serverError && (
+          // <Grid
+          //   item
+          //   container
+          //   justifyContent="center"
+          //   sx={{ mt: 2, whiteSpace: "pre-line" }}
+          // >
+          //   <Alert severity="error"> {state.errorMessage} </Alert>
+          //   <Grid item container justifyContent="center" sx={{ mt: 2 }}>
+          //     <Alert severity="info">Please use another</Alert>
+          //   </Grid>
+          // </Grid>
+          <>
+            <Alert severity="error" sx={{ whiteSpace: "pre-line" }}>
+              {" "}
+              {state.errorMessage}{" "}
+            </Alert>
+            <Alert severity="info" className={styles.myInfoAlert}>Please use another</Alert>
+          </>
+        )}
         <Grid item container className={styles.formItem}>
           <TextField
             id="username"
@@ -274,12 +335,11 @@ function Register() {
               })
             }
             onBlur={(e) => {
-                dispatch({
-                  type: "catchPasswordErrors",
-                  passwordChosen: e.target.value,
-                });
-              }
-            }
+              dispatch({
+                type: "catchPasswordErrors",
+                passwordChosen: e.target.value,
+              });
+            }}
             error={state.passwordErrors.hasErrors}
             helperText={state.passwordErrors.errorMessage}
           />
@@ -298,6 +358,7 @@ function Register() {
                 password2Chosen: e.target.value,
               })
             }
+            helperText={state.password2HelperText}
           />
         </Grid>
         <Grid item container className={styles.registerDiv} xs={8}>

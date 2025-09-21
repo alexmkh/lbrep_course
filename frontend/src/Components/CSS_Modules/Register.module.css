@@ -84,3 +84,11 @@
   padding: 0.2rem 1rem 0.2rem 1rem;
   border-radius: 4px;
 }
+
+.myInfoAlert {
+  /* background-color: #67aee9; */
+  /* color: white; */
+  margin-top: 4px;
+  padding: 0.2rem 1rem 0.2rem 1rem;
+  border-radius: 4px;
+}
