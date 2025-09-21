@@ -42,12 +42,18 @@ function Register() {
     sendRequest: 0,
     openSnack: false,
     disableBtn: false,
+    userNameErrors: {
+      hasErrors: false,
+      errorMessage: "",
+    },
   };
 
   const ReducerFunction = (draft, action) => {
     switch (action.type) {
       case "catchUsernameChange":
         draft.usernameValue = action.usernameChosen;
+        draft.userNameErrors.hasErrors = false;
+        draft.userNameErrors.errorMessage = "";
         break;
       case "catchEmailChange":
         draft.emailValue = action.emailChosen;
@@ -70,6 +76,23 @@ function Register() {
       case "allowTheButton":
         draft.disableBtn = false;
         break;
+      case "catchUsernameErrors":
+        if (action.usernameChosen == "") {
+          draft.userNameErrors.hasErrors = true;
+          draft.userNameErrors.errorMessage = "Username cannot be empty.";
+        } else if (action.usernameChosen.length < 5) {
+          draft.userNameErrors.hasErrors = true;
+          draft.userNameErrors.errorMessage =
+            "Username must be at least 5 characters long.";
+        } else if (!/^([a-zA-Z0-9]+)$/.test(action.usernameChosen)) {
+          draft.userNameErrors.hasErrors = true;
+          draft.userNameErrors.errorMessage =
+            "Username can only contain letters and numbers.";
+        } else {
+          draft.userNameErrors.hasErrors = false;
+          draft.userNameErrors.errorMessage = "";
+        }
+        break;
 
       default:
         return draft; // Return the current state if no action matches
@@ -87,9 +110,11 @@ function Register() {
     // setSendRequest((prev) => !prev);
     dispatch({ type: "changeSendRequest" });
     dispatch({ type: "disableTheButton" });
-    ToastSuccess().fire("You have successfully created an account!").then(() => {
-      navigate("/");
-    })
+    ToastSuccess()
+      .fire("You have successfully created an account!")
+      .then(() => {
+        navigate("/");
+      });
   };
 
   useEffect(() => {
@@ -143,6 +168,14 @@ function Register() {
                 usernameChosen: e.target.value,
               })
             }
+            onBlur={(e) => {
+              dispatch({
+                type: "catchUsernameErrors",
+                usernameChosen: e.target.value,
+              });
+            }}
+            error={state.userNameErrors.hasErrors}
+            helperText={state.userNameErrors.errorMessage}
           />
         </Grid>
         <Grid item container className={styles.formItem}>
