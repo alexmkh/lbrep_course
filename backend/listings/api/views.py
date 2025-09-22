@@ -34,3 +34,11 @@ class ListingDelete(generics.DestroyAPIView):
 class ListingUpdate(generics.UpdateAPIView):
     queryset = Listing.objects.all()
     serializer_class = ListingSerializer
+
+
+class AreaList(generics.ListAPIView):
+    from .serializers import AreaSerializer
+    from listings.models import Area
+
+    queryset = Area.objects.all()
+    serializer_class = AreaSerializer

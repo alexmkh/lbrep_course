@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.gis.measure import D
 from django.contrib.gis.geos import Point
 
-from listings.models import Listing, Poi
+from listings.models import Listing, Poi, Area
 
 
 class ListingSerializer(serializers.ModelSerializer):
@@ -34,7 +34,7 @@ class ListingSerializer(serializers.ModelSerializer):
 class PoiSerializer(serializers.ModelSerializer):
     class Meta:
         model = Poi
-        fields = '__all__'
+        fields = "__all__"
 
     latitude = serializers.SerializerMethodField()
     longitude = serializers.SerializerMethodField()
@@ -44,3 +44,9 @@ class PoiSerializer(serializers.ModelSerializer):
 
     def get_longitude(self, obj):
         return obj.location.tuple[1] if obj.location else None
+
+
+class AreaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Area
+        fields = "__all__"

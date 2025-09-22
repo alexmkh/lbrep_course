@@ -75,10 +75,10 @@ import {
 // Custom imports
 import styles from "./CSS_Modules/AddProperty.module.css";
 
-const areaOptions = [
+let areaOptions = [
   { value: "", label: "" },
-  { value: "Inner London", label: "Inner London" },
-  { value: "Outer London", label: "Outer London" },
+  // { value: "Inner London", label: "Inner London" },
+  // { value: "Outer London", label: "Outer London" },
 ];
 
 const innerLondonOptions = [
@@ -247,6 +247,7 @@ const rentalFrequencyOptions = [
   { value: "Day", label: "Day" },
 ];
 
+
 function AddProperty() {
   const navigate = useNavigate();
   const GlobalState = useContext(StateContext);
@@ -411,13 +412,36 @@ function AddProperty() {
   const [state, dispatch] = useImmerReducer(ReducerFunction, initialState);
   const TheMapComponent = () => {
     const map = useMap();
-    dispatch({
-      type: "getMap",
-      mapData: map,
-    });
+    useEffect(() => {
+      if (map) {
+        dispatch({
+          type: "getMap",
+          mapData: map,
+        });
+      }
+    }, [map, dispatch]); // сработает только когда появится новый map
     return null;
   };
 
+  // Get area list from backend
+  useEffect(() => {
+    const GetAreaList = async () => {
+      try {
+        const response = await Axios.get("http://localhost:8000/api/areas/");
+        console.log("Response data received");
+        console.log(response.data);
+        response.data.map((areaObject) => {
+          areaOptions.push({ value: areaObject.name, label: areaObject.name });
+          });
+      } catch (error) {
+        console.log("There was an error");
+        console.log(error.response);
+      }
+    };
+    GetAreaList();
+  }, []);
+  console.log("areaOptions", areaOptions);
+  
   // Use effect to change the map view depending on chosen borough
 
   useEffect(() => {
@@ -798,9 +822,11 @@ function AddProperty() {
     e.preventDefault();
     dispatch({ type: "changeSendRequest" });
     dispatch({ type: "disableTheButton" });
-    ToastSuccess().fire("Your property is being added...").then(() => {
-      navigate("/listings");
-    });
+    ToastSuccess()
+      .fire("Your property is being added...")
+      .then(() => {
+        navigate("/listings");
+      });
   };
 
   // Use effect to send the form data to the backend
@@ -1252,20 +1278,22 @@ function AddProperty() {
           </Grid>
         </Grid>
 
-        <Grid item className={styles.formItem} >
-        {state.latitudeValue && state.longitudeValue ? (
-          <Alert severity="success">
-              Your property is located @ {state.latitudeValue},{" "} {state.longitudeValue}
-          </Alert>
-        ) : (
-          <Alert severity="warning">
-              Please drag the marker on the map to set the exact location of your property.
-          </Alert>
-        )}
+        <Grid item className={styles.formItem}>
+          {state.latitudeValue && state.longitudeValue ? (
+            <Alert severity="success">
+              Your property is located @ {state.latitudeValue},{" "}
+              {state.longitudeValue}
+            </Alert>
+          ) : (
+            <Alert severity="warning">
+              Please drag the marker on the map to set the exact location of
+              your property.
+            </Alert>
+          )}
         </Grid>
 
         {/* Map */}
-        <Grid item container >
+        <Grid item container>
           <MapContainer
             className={styles.map}
             center={[51.505, -0.09]}

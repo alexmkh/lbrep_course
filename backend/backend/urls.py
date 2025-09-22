@@ -25,6 +25,8 @@ from django.conf.urls.static import static
 urlpatterns = (
     [
         path("admin/", admin.site.urls),
+
+        # Listings URLs
         path(
             "api/listings/",
             listing_api_views.ListingList.as_view(),
@@ -65,8 +67,12 @@ urlpatterns = (
             user_api_views.ProfileUpdate.as_view(),
             name="profile-detail",
         ),
+        # User registration and authentication
         path("api-auth-djoser/", include("djoser.urls")),
         path("api-auth-djoser/", include("djoser.urls.authtoken")),
+
+        # Area list
+        path("api/areas/", listing_api_views.AreaList.as_view(), name="area-list"),
     ]
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
