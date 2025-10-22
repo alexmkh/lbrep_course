@@ -19,11 +19,15 @@ import Agencies from "./Components/Agencies";
 import AgencyDetail from "./Components/AgencyDetail";
 import ListingDetail from "./Components/ListingDetail";
 import LandmarkPhoto from "./Components/LandmarkPhoto";
+import Borough from "./Components/Borough";
+import BoroughList from "./Components/BoroughList";
+import HaveringMap from "./Components/HaveringMap";
 
 // Contexts for the app
 import { useImmerReducer } from "use-immer";
 import DispatchContext from "./Contexts/DispatchContext";
 import StateContext from "./Contexts/StateContext";
+import { GeoDataProvider } from "./Components/GeoDataContext";
 
 function App() {
   const initialState = {
@@ -72,27 +76,32 @@ function App() {
   return (
     <StateContext.Provider value={state}>
       <DispatchContext.Provider value={dispatch}>
-        <StyledEngineProvider injectFirst>
-          <BrowserRouter>
-            <CssBaseline />
-            <Header />
-            {/* Main App Bar */}
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/listings" element={<Listings />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/agencies" element={<Agencies />} />
-              <Route path="/agencies/:id" element={<AgencyDetail />} />
-              <Route path="/addproperty" element={<AddProperty />} />
-              <Route path="/listings/:id" element={<ListingDetail />} />
-              <Route path="/poiphoto" element={<LandmarkPhoto />} />
-              <Route path="/testing" element={<Testing />} />
-              {/* Add more routes as needed */}
-            </Routes>
-          </BrowserRouter>
-        </StyledEngineProvider>
+        <GeoDataProvider>
+          <StyledEngineProvider injectFirst>
+            <BrowserRouter>
+              <CssBaseline />
+              <Header />
+              {/* Main App Bar */}
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/listings" element={<Listings />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/agencies" element={<Agencies />} />
+                <Route path="/agencies/:id" element={<AgencyDetail />} />
+                <Route path="/addproperty" element={<AddProperty />} />
+                <Route path="/listings/:id" element={<ListingDetail />} />
+                <Route path="/poiphoto" element={<LandmarkPhoto />} />
+                <Route path="/testing" element={<Testing />} />
+                <Route path="/borough" element={<Borough />} />
+                <Route path="/borough-list" element={<BoroughList />} />
+                <Route path="/havering" element={<HaveringMap />} />
+                {/* Add more routes as needed */}
+              </Routes>
+            </BrowserRouter>
+          </StyledEngineProvider>
+        </GeoDataProvider>
       </DispatchContext.Provider>
     </StateContext.Provider>
   );

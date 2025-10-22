@@ -1,8 +1,9 @@
 from rest_framework import serializers
 from django.contrib.gis.measure import D
 from django.contrib.gis.geos import Point
+from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
-from listings.models import Listing, Poi, Area
+from listings.models import Listing, Poi, Area, Borough, BoroughBorder
 
 
 class ListingSerializer(serializers.ModelSerializer):
@@ -50,3 +51,27 @@ class AreaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Area
         fields = "__all__"
+
+    # boroughs = serializers.StringRelatedField(many=True)
+    boroughs = serializers.SerializerMethodField()
+    def get_boroughs(self, obj):
+        query = Borough.objects.filter(area=obj)
+        boroughs_serialized = BoroughSerializer(query, many=True)
+        return boroughs_serialized.data
+
+
+class BoroughBorderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BoroughBorder
+        geo_field = "border"
+        fields = ["id", "border", "borough"]
+
+
+class BoroughSerializer(serializers.ModelSerializer):
+    area = serializers.SlugRelatedField(slug_field="name", queryset=Area.objects.all())
+    border = BoroughBorderSerializer(source="border_data", read_only=True)
+
+    class Meta:
+        model = Borough
+        fields = "__all__"
+        # read_only_fields = ["id"]

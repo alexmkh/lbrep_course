@@ -1,8 +1,10 @@
-from .serializers import ListingSerializer
-from listings.models import Listing
+from .serializers import ListingSerializer, AreaSerializer, BoroughSerializer, BoroughBorderSerializer
+from listings.models import Listing, Area, Borough, BoroughBorder
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework import status
+from rest_framework.response import Response
 
 class ListingList(generics.ListAPIView):
     queryset = Listing.objects.all().order_by('-date_posted')
@@ -37,8 +39,40 @@ class ListingUpdate(generics.UpdateAPIView):
 
 
 class AreaList(generics.ListAPIView):
-    from .serializers import AreaSerializer
-    from listings.models import Area
-
     queryset = Area.objects.all()
     serializer_class = AreaSerializer
+
+
+class BoroughList(generics.ListAPIView):
+    queryset = Borough.objects.all()
+    serializer_class = BoroughSerializer
+
+class BoroughCreate(generics.CreateAPIView):
+    queryset = Borough.objects.all()
+    serializer_class = BoroughSerializer
+
+
+class BoroughDetail(generics.RetrieveAPIView):
+    queryset = Borough.objects.all()
+    serializer_class = BoroughSerializer
+    lookup_field = "id"
+
+
+class BoroughViewSet(viewsets.ModelViewSet):
+    queryset = Borough.objects.all()
+    serializer_class = BoroughSerializer
+
+
+class BoroughDeleteAllView(generics.GenericAPIView):
+    serializer_class = BoroughSerializer
+
+    def delete(self, request, *args, **kwargs):
+        count, _ = Borough.objects.all().delete()
+        return Response(
+            {"message": f"Deleted {count} borough(s)"}, status=status.HTTP_200_OK
+        )
+
+
+class BoroughBorderViewSet(viewsets.ModelViewSet):
+    queryset = BoroughBorder.objects.all()
+    serializer_class = BoroughBorderSerializer

@@ -98,3 +98,27 @@ class Area(models.Model):
     def __str__(self):
         return self.name
 
+
+class Borough(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    area = models.ForeignKey(Area, on_delete=models.CASCADE, related_name='boroughs')
+
+    # location = models.PointField(null=True, blank=True, srid=4236)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+
+    # GeoDjango
+    # border = models.MultiPolygonField(null=True, blank=True, srid=4326)
+
+    def __str__(self):
+        return self.name
+
+
+class BoroughBorder(models.Model):
+    borough = models.OneToOneField(
+        Borough, on_delete=models.CASCADE, related_name="border_data"
+    )
+    border = models.MultiPolygonField(srid=4326)
+
+    def __str__(self):
+        return f"Border for {self.borough.name}"
