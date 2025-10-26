@@ -10,7 +10,7 @@
   margin-right: 2rem;
 }
 
-.ml2 {
+.ml2, .dashboardBtn {
   margin-left: 2rem;
 }
 
@@ -59,7 +59,7 @@
   height: 85vh;
 }
 
-.profileBtn {
+.profileBtn, .boroughMenuItem {
   color: black;
   background-color: green;
   font-weight: bolder;
@@ -67,7 +67,7 @@
   border-radius: 15px;
   margin-bottom: 0.25rem;
 }
-.profileBtn:hover {
+.profileBtn:hover, .boroughMenuItem:hover {
   background-color: blue;
 }
 

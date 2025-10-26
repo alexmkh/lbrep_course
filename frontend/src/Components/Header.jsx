@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Axios from "axios";
 
@@ -12,6 +12,7 @@ import { MenuItem } from "@mui/material";
 
 // Custom styles
 import styles from "./CSS_Modules/Home.module.css";
+
 import { ToastSuccess } from "../plugins/Toast";
 
 // Contexts
@@ -37,7 +38,27 @@ function Header() {
     navigate("/profile");
   };
 
-  const [openToast, setOpenToast] = React.useState(false);
+  const handleClickBoroughList = () => {
+    handleBoroughClose();
+    navigate("/borough-list");
+  };
+
+  const handleClickBoroughUpload = () => {
+    handleBoroughClose();
+    navigate("/borough");
+  }
+
+  const [boroughAnchorEl, setBoroughAnchorEl] = useState(null);
+  const boroughOpen = Boolean(boroughAnchorEl);
+  const handleBoroughClick = (event) => {
+    setBoroughAnchorEl(event.currentTarget);
+  };
+  const handleBoroughClose = () => {
+    setBoroughAnchorEl(null);
+  };
+
+
+  const [openToast, setOpenToast] = useState(false);
 
   async function HandleLogout() {
     setAnchorEl(null);
@@ -86,6 +107,37 @@ function Header() {
             <Typography variant="h6">Agencies</Typography>
           </Button>
         </div>
+
+        <Button
+          id="borough-button"
+          color="inherit"
+          aria-controls={open ? "borough-menu" : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? "true" : undefined}
+          onClick={handleBoroughClick}
+          className={styles.dashboardBtn}
+        >
+          <Typography variant="h6">Geography</Typography>
+        </Button>
+        <Menu
+          id="borough-menu"
+          anchorEl={boroughAnchorEl}
+          open={boroughOpen}
+          onClose={handleBoroughClose}
+          slotProps={{
+            list: {
+              "aria-labelledby": "borough-button",
+            },
+          }}
+        >
+          <MenuItem onClick={handleClickBoroughList} className={styles.boroughMenuItem}>
+            Borough List
+          </MenuItem>
+          <MenuItem onClick={handleClickBoroughUpload} className={styles.boroughMenuItem}>
+            Upload GeoData to DB
+          </MenuItem>
+        </Menu>
+
         <div className={styles.btnsRight}>
           <Button
             className={styles.addPropertyBtn}
@@ -93,6 +145,7 @@ function Header() {
           >
             Add Property
           </Button>
+
           {GlobalState.userIsLogged ? (
             <Button
               className={styles.loginBtn}
