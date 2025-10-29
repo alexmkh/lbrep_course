@@ -205,3 +205,8 @@ JAZZMIN_UI_TWEAKS = {
         "success": "btn-success",
     },
 }
+
+try:
+    from server_settings import *
+except ImportError:
+    pass
