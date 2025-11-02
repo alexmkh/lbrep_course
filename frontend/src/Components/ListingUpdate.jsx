@@ -26,6 +26,8 @@ import {
 import styles from "./CSS_Modules/ListingUpdate.module.css";
 import { ToastSuccess } from "../plugins/Toast";
 
+import API_URL, {HostURL} from "../plugins/BaseUrl";
+
 const listingTypeOptions = [
   { value: "", label: "" },
   { value: "Apartment", label: "Apartment" },
@@ -49,7 +51,8 @@ const rentalFrequencyOptions = [
 function ListingUpdate({ listingData, closeDialog }) {
   const navigate = useNavigate();
   const GlobalState = useContext(StateContext);
-  const URL = `http://localhost:8000/api/listings/${listingData.id}/update/`;
+  // const URL = `http://localhost:8000/api/listings/${listingData.id}/update/`;
+  const URL = API_URL(`listings/${listingData.id}/update/`);
 
   const initialState = {
     titleValue: listingData.title || "",
@@ -128,9 +131,6 @@ function ListingUpdate({ listingData, closeDialog }) {
     console.log("Form submitted");
     dispatch({ type: "changeSendRequest" });
     dispatch({ type: "disableTheButton" });
-    // ToastSuccess().fire("Your property is being updated...").then(() => {
-    //   // navigate(0);
-    // });
   };
 
   // Use effect to send the form data to the backend
